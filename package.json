@@ -1,0 +1,43 @@
+{
+  "name": "pidash",
+  "version": "0.1.0",
+  "private": true,
+  "dependencies": {
+    "exif-js": "^2.3.0",
+    "history": "^4.7.2",
+    "prop-types": "^15.6.0",
+    "react": "^16.1.1",
+    "react-dom": "^16.1.1",
+    "react-redux": "^5.0.6",
+    "react-router-dom": "^4.2.2",
+    "redux": "^3.7.2",
+    "redux-form": "^7.1.2",
+    "redux-thunk": "^2.2.0",
+    "socket.io-client": "^2.1.1"
+  },
+  "scripts": {
+    "start": "npm-run-all -p watch-css start-js",
+    "build": "npm run build-css && react-scripts build",
+    "test": "react-scripts test --env=jsdom --setupTestFrameworkScriptFile=./src/tests/__setup.js",
+    "eject": "react-scripts eject",
+    "lint": "eslint --ext .jsx --ext .js ./src",
+    "lint-fix": "eslint --ext .jsx --ext .js ./src --fix",
+    "start-js": "react-scripts start",
+    "build-css": "node-sass-chokidar src/stylesheets -o src/stylesheets",
+    "watch-css": "npm run build-css && node-sass-chokidar src/stylesheets -o src/stylesheets --watch --recursive"
+  },
+  "devDependencies": {
+    "enzyme": "^3.3.0",
+    "enzyme-adapter-react-16": "^1.1.1",
+    "eslint": "^4.19.1",
+    "eslint-config-airbnb": "^15.1.0",
+    "eslint-plugin-import": "^2.12.0",
+    "eslint-plugin-jsx-a11y": "^5.1.1",
+    "eslint-plugin-react": "^7.9.1",
+    "jest-enzyme": "^4.0.1",
+    "node-sass-chokidar": "0.0.3",
+    "npm-run-all": "^4.1.2",
+    "react-scripts": "^1.0.14",
+    "react-test-renderer": "^16.4.1"
+  }
+}
