@@ -1,0 +1,134 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="theme-color" content="#000000">
+    <title>PiDash Speedo POC</title>
+    <style>
+        body {
+            font-family: "Square Pixel7", monospace;
+            background-color: black;
+        }
+        .PiDash-Container {
+            width: 128px;
+            height: 64px;
+            background-color: white;
+            color: black;
+            position: relative;
+            margin-bottom: 15px;
+        }
+        .PiDash-Container div {
+            position: absolute;
+        }
+
+        .PiDash-Gear__unit {
+            left: 5px;
+            top: 2px;
+            width: 27px;
+            height: 12px;
+            font-size: 12px;
+        }
+        .PiDash-Gear__value {
+            left: 5px;
+            top: 3px;
+            width: 22px;
+            height: 40px;
+            font-size: 40px;
+        }
+        .PiDash-Speed__value {
+            left: 75px;
+            top: 32px;
+            width: 50px;
+            height: 31px;
+            font-size: 30px;
+            text-align: right;
+        }
+        .PiDash-Speed__unit {
+            left: 97px;
+            top: 54px;
+            width: 27px;
+            height: 12px;
+            font-size: 12px;
+            text-align: right;
+        }
+    </style>
+    <script>
+        setInterval(function () {
+            const speed = Math.floor(160 * Math.random());
+            const gear = Math.floor(6 * Math.random());
+            const speedUnit = 'kmph';
+            const gearUnit = 'gear';
+            const context = document.querySelector('#PiDash-Canvas').getContext('2d');
+            const testContext = document.querySelector('#PiDash-Canvas-Redraw').getContext('2d');
+            const sizer = (sizeInPixels) => `${sizeInPixels}px 'Square Pixel7'`;
+            const displayWidth = 128;
+            const displayHeight = 64;
+
+            document.querySelector('.PiDash-Speed__value').innerHTML = speed;
+            document.querySelector('.PiDash-Gear__value').innerHTML = gear === 0 ? 'N' : gear;
+
+            context.fillStyle = 'white';
+            context.fillRect(0, 0, displayWidth, displayHeight);
+            context.fillStyle = 'black';
+            context.textAlign = 'left';
+            context.textBaseline = 'top';
+            context.font = sizer(12);
+            context.fillText(gearUnit, 5, 2);
+            context.fillText(speedUnit, 97, 54);
+
+            context.font = sizer(40);
+            context.fillText(gear === 0 ? 'N' : gear, 5, 3);
+
+            context.font = sizer(30);
+            context.textAlign = 'right';
+            context.fillText(speed, 125, 32);
+
+            const imageDataArray = context.getImageData(0, 0, displayWidth, displayHeight).data;
+            const OLEDPixels = [];
+            const OLEDBuffer = [];
+
+            for(let i = 0; i < imageDataArray.length; i += 4) {
+                const RGBA = [imageDataArray[i], imageDataArray[i + 1], imageDataArray[i + 2], imageDataArray[i + 3]];
+
+                if(RGBA[2] <= 110) {
+                    OLEDPixels.push(1);
+                } else {
+                    OLEDPixels.push(0);
+                }
+            }
+
+            for(let y = 1; y <= displayHeight; y++) {
+                for(let x = 1; x <= displayWidth; x++) {
+                    const index = ((y - 1) * displayWidth) + (x - 1);
+
+                    OLEDBuffer.push([x, y, OLEDPixels[index]]);
+                }
+            }
+
+            testContext.fillStyle = 'white';
+            testContext.fillRect(0, 0, displayWidth, displayHeight);
+            testContext.fillStyle = 'black';
+            OLEDBuffer.forEach(([x, y, isBlackPixel]) => {
+                if (isBlackPixel) {
+                    testContext.fillRect(x - 1, y - 1, 1, 1);
+                }
+            });
+        }, 500);
+    </script>
+</head>
+<body>
+<div class="PiDash-Container">
+    <div class="PiDash-Gear">
+        <div class="PiDash-Gear__unit">gear</div>
+        <div class="PiDash-Gear__value">5</div>
+    </div>
+    <div class="PiDash-Speed">
+        <div class="PiDash-Speed__value">125</div>
+        <div class="PiDash-Speed__unit">kmph</div>
+    </div>
+</div>
+<canvas id="PiDash-Canvas" height="64px" width="128px"></canvas>
+<canvas id="PiDash-Canvas-Redraw" height="64px" width="128px"></canvas>
+</body>
+</html>
